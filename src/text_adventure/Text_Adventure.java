@@ -16,6 +16,8 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -29,12 +31,12 @@ import javafx.stage.StageStyle;
 public class Text_Adventure extends Application {
 
     public int answer;
-    public String[][] map = new String[30][30];
-    public String[][] LandMarkMap = new String[30][30];
-    public int x = 15;
-    public int y = 15;
+    public static String[][] map = new String[30][30];
+    public static String[][] LandMarkMap = new String[30][30];
+    public static int x = 15;
+    public static int y = 15;
     public int on = 1;
-    public BackPack pack = new BackPack(10,30,3);
+    public static BackPack pack = new BackPack(10,30,3);
     
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -52,7 +54,7 @@ public class Text_Adventure extends Application {
         //  à á â ã ä å
         
         CreateLandmarks();
-        
+        LandMarkMap[x][y]=" A ";
         map[x][y] = " ð ";
         CreateMap();
 
@@ -66,7 +68,7 @@ public class Text_Adventure extends Application {
         backpack.setLayoutY(180);
         backpack.setLayoutX(75);
         backpack.setOnAction(e -> {
-            backPack(1);
+            backPack(0);
         });
         
         Pane root = new Pane();
@@ -74,12 +76,14 @@ public class Text_Adventure extends Application {
         up.setOnAction((ActionEvent e) -> { 
             if (Check(-1, 0) == 1) {
                 MovePlayer(-1, 0);
+                pack.setWater(pack.getWater()-1);
                 CreateMap();
             }
             else if (Check(-1,0) == 2){
                 MovePlayer(-1, 0);   
                 CreateMap(); 
-                land.runLandmark(LandMarkMap[x][y]);
+                pack.setWater(pack.getWater()-1);
+                runLandmark(LandMarkMap[x][y]);
             }
 
         });
@@ -91,12 +95,14 @@ public class Text_Adventure extends Application {
         down.setOnAction(e -> {
             if( Check(1,0) == 1 ){
                 MovePlayer(1, 0);
+                pack.setWater(pack.getWater()-1);
                 CreateMap();  
             }
             else if ( Check(1,0) == 2){
-                MovePlayer(1, 0); 
-                CreateMap(); 
-                land.runLandmark(LandMarkMap[x][y]);
+                MovePlayer(1, 0);
+                pack.setWater(pack.getWater()-1);
+                CreateMap();
+                runLandmark(LandMarkMap[x][y]);
             }
             
         });
@@ -107,12 +113,14 @@ public class Text_Adventure extends Application {
         left.setOnAction(e -> {
             if( Check(0,-1) == 1 ){
                 MovePlayer(0, -1);
+                pack.setWater(pack.getWater()-1);
                 CreateMap();
             }
             else if ( Check(0,-1) == 2){
                 MovePlayer(0, -1); 
                 CreateMap(); 
-                land.runLandmark(LandMarkMap[x][y]);
+                pack.setWater(pack.getWater()-1);
+                runLandmark(LandMarkMap[x][y]);
             }
             
         });
@@ -123,12 +131,14 @@ public class Text_Adventure extends Application {
         right.setOnAction(e -> {
             if( Check(0,1) == 1 ){
                 MovePlayer(0, 1);
+                pack.setWater(pack.getWater()-1);
                 CreateMap();
             }
             else if ( Check(0,1) == 2){
-                MovePlayer(0, 1); 
-                CreateMap(); 
-                land.runLandmark(LandMarkMap[x][y]);
+                MovePlayer(0, 1);
+                pack.setWater(pack.getWater()-1);
+                CreateMap();
+                runLandmark(LandMarkMap[x][y]);
             }
             
         });
@@ -160,20 +170,20 @@ public class Text_Adventure extends Application {
         for (int i = 0; i < 50; i++) {
             int k = rand.nextInt(30);
             int u = rand.nextInt(30);
-            map[k][u]=" C ";
-            LandMarkMap[k][u] = " C ";
+            map[k][u]="|C|";
+            LandMarkMap[k][u] = "|C|";
         }
         for (int i = 0; i < 20; i++) {
             int k = rand.nextInt(30);
             int u = rand.nextInt(30);
-            map[k][u]=" H ";
-            LandMarkMap[k][u] = " H ";
+            map[k][u]="|H|";
+            LandMarkMap[k][u] = "|H|";
         }
         for (int i = 0; i < 5; i++) {
             int k = rand.nextInt(30);
             int u = rand.nextInt(30);
-            map[k][u]=" O ";
-            LandMarkMap[k][u] = " O ";
+            map[k][u]="|O|";
+            LandMarkMap[k][u] = "|O|";
         }
     }
     
@@ -235,21 +245,21 @@ public class Text_Adventure extends Application {
     }
 
     
-    public void backPack(int mode){
+    public static void backPack(int mode){
         
         Stage stage = new Stage();
         Pane root = new VBox();
         Label food = new Label();
         food.setText("Food: " + Integer.toString(pack.getFood()));
-        food.setStyle("-fx-font-size:20");
+        food.setStyle("-fx-font-size:15");
         
         Label water = new Label();
         water.setText("Water: " + Integer.toString(pack.getWater()));
-        water.setStyle("-fx-font-size:20");
+        water.setStyle("-fx-font-size:15");
         
         Label torches = new Label();
         torches.setText("Torches: " + Integer.toString(pack.getTorches()));
-        torches.setStyle("-fx-font-size:20");
+        torches.setStyle("-fx-font-size:15");
         
         
         Button btn = new Button("Close");
@@ -257,6 +267,7 @@ public class Text_Adventure extends Application {
         btn.setOnAction(e -> {
             stage.close();
         });
+        
         if(mode == 1){
             food.setText("Food: " + Integer.toString(pack.getFood()));
             torches.setText("Torches: " + Integer.toString(pack.getTorches()));
@@ -270,25 +281,26 @@ public class Text_Adventure extends Application {
             stage.setResizable(false);
             stage.show();
         }
-        
-        
-        
-        
-        
     }
     
     
-    public void CreateMap() {
-
+    public static void CreateMap() {
+        String Food = Integer.toString(pack.getFood());
+        String Water = Integer.toString(pack.getWater());
+        String Torches = Integer.toString(pack.getTorches());
         
         for (int i = 0; i < 50; i++) {
             System.out.println("");
         }
         
         System.out.println("ð <-- this is you ");
-        System.out.println("C: cave  H: house  O: City");
+        System.out.println("A: Home C: cave  H: house  O: City");
         System.out.println("");
-        
+        System.out.println("BackPack: ");
+        System.out.println("Food: " + Food);
+        System.out.println("Water: " + Water);
+        System.out.println("Torches: " + Torches);
+        System.out.println("");
         for (int i = 0; i < 30; i++) {
             System.out.print("___");
         }
@@ -303,49 +315,245 @@ public class Text_Adventure extends Application {
         map[x][y] = "[@]";
 
     }
-
-    public void question() {
-        Stage stage1 = new Stage();
-
-        Pane root = new Pane();
-
-        Button yes = new Button("Go");
-        Button no = new Button("Leave");
-        yes.setLayoutX(40);
-        yes.setLayoutY(20);
-
-        no.setLayoutX(115);
-        no.setLayoutY(20);
-
-        yes.setOnAction(e -> {
-            System.out.println("You've chosen Go");
-            answer = 1;
-            try {
-                TimeUnit.MILLISECONDS.sleep(1000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Text_Adventure.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            stage1.close();
-        });
-        no.setOnAction(e -> {
-            System.out.println("You've chosen Leave");
-            answer = 0;
-            try {
-                TimeUnit.MILLISECONDS.sleep(1000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Text_Adventure.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            stage1.close();
-        });
-        Scene scene = new Scene(root, 200, 150);
-        root.getChildren().addAll(yes, no);
-        stage1.setTitle("question");
-        stage1.setScene(scene);
-        stage1.setResizable(false);
-        stage1.initStyle(StageStyle.UNDECORATED);
-        stage1.initModality(Modality.APPLICATION_MODAL);
-        stage1.showAndWait();
-
+    
+     public void runLandmark(String entity){
+        
+        
+        switch (entity){
+            case "|C|":
+                Cave();
+                break;
+            case "|H|":
+                House();
+                break;
+            case "|O|":
+                City();
+                break;
+            case" A ":
+                Home();
+                break;
+            default:
+                System.out.println("lmao youll never see this ☻");
+        }
+        
+        
+        
     }
-
+    
+    public void Home(){
+        
+        Stage stage = new Stage();
+        Pane root = new Pane();
+        
+        Label lab = new Label();
+        
+        Image img = new Image("house.jpg");
+        
+        ImageView img2 = new ImageView(img);
+        img2.setLayoutX(30);
+        img2.setFitHeight(488);
+        img2.setFitWidth(671);
+        lab.setText("---You are in your home---");
+        lab.setLayoutX(300);
+        lab.setLayoutY(510);
+        
+        Button leave = new Button("Embark");
+        leave.setLayoutX(40);
+        leave.setLayoutY(520);
+        leave.setOnAction(e -> {
+            stage.close();
+        });
+        
+        
+        Button enter = new Button("Re-Stock");
+        enter.setLayoutX(350);
+        enter.setLayoutY(530);
+        enter.setOnAction(e -> {
+            if(pack.food != 10 ){
+                System.out.println("+" + (10-pack.food) + " food");
+                pack.food = 10;
+            }else{
+                System.out.println("+0 food");
+            }
+            if (pack.water != 10){
+                System.out.println("+" + (30-pack.water) + " water");
+                pack.water = 30;
+            }else{
+                System.out.println("+0 water");
+            }
+            backPack(1);
+            CreateMap();
+            enter.setDisable(true);
+        });
+        
+        
+        Scene scene = new Scene(root, 700, 700);
+        root.getChildren().addAll(leave,lab,enter,img2);
+        stage.setTitle("Cave");
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+        
+        System.out.println("You have left Your Home");
+        
+        
+        
+    }
+    
+    
+    public void Cave(){
+        Stage stage = new Stage();
+        Pane root = new Pane();
+        
+        Label lab = new Label();
+        
+        Image img = new Image("cave.png");
+        
+        ImageView img2 = new ImageView(img);
+        img2.setLayoutX(30);
+        
+        
+        Button collect = new Button ("Collect +1 meat");
+        Button enter = new Button("enter the cave");
+        
+        lab.setText("---You are standing by the cave---");
+        lab.setLayoutX(300);
+        lab.setLayoutY(510);
+        
+        Button leave = new Button("Leave");
+        leave.setLayoutX(40);
+        leave.setLayoutY(520);
+        leave.setOnAction(e -> {
+            stage.close();
+        });
+        
+        enter.setLayoutX(350);
+        enter.setLayoutY(530);
+        enter.setOnAction(e -> {
+            lab.setText("---You are now in a cave---");
+            root.getChildren().add(collect);
+            root.getChildren().remove(enter);
+        });
+        
+        collect.setLayoutX(350);
+        collect.setLayoutY(530);
+        collect.setOnAction(e ->{ 
+            pack.food++;
+            collect.setDisable(true);
+        });
+        
+        
+        
+        
+        Scene scene = new Scene(root, 700, 700);
+        root.getChildren().addAll(leave,lab,enter,img2);
+        stage.setTitle("Cave");
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+        
+        System.out.println("You have left the Cave.");
+        
+    }
+    
+    public void House(){
+        Stage stage = new Stage();
+        Pane root = new Pane();
+        
+        Label lab = new Label();
+        
+        Image img = new Image("house.png");
+        ImageView img2 = new ImageView(img);
+        
+        img2.setFitHeight(488);
+        img2.setFitWidth(671);
+        img2.setLayoutX(20);
+        
+        lab.setText("---You are standing by the house---");
+        lab.setLayoutX(300);
+        lab.setLayoutY(510);
+        
+        Button leave = new Button("Leave");
+        leave.setLayoutX(40);
+        leave.setLayoutY(520);
+        leave.setOnAction(e -> {
+            stage.close();
+        });
+        
+        
+        Button enter = new Button("enter the house");
+        enter.setLayoutX(350);
+        enter.setLayoutY(530);
+        enter.setOnAction(e -> {
+            lab.setText("---You are now in the house---");
+            enter.setDisable(true);
+        });
+        
+        
+        Scene scene = new Scene(root, 700, 700);
+        root.getChildren().addAll(leave,lab,enter,img2);
+        stage.setTitle("House");
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+        
+        System.out.println("You have left the House.");
+    }
+    
+    public void City(){
+        Stage stage = new Stage();
+        Pane root = new Pane();
+        
+        Label lab = new Label();
+        
+        Image img = new Image("city.jpg");
+        
+        ImageView img2 = new ImageView(img);
+        img2.setLayoutX(30);
+        img2.setFitHeight(488);
+        img2.setFitWidth(671);
+        
+        
+        
+        lab.setText("---You are standing by the entrance---");
+        lab.setLayoutX(300);
+        lab.setLayoutY(510);
+        
+        Button leave = new Button("Leave");
+        leave.setLayoutX(40);
+        leave.setLayoutY(520);
+        leave.setOnAction(e -> {
+            stage.close();
+        });
+        
+        
+        Button enter = new Button("enter the city");
+        enter.setLayoutX(350);
+        enter.setLayoutY(530);
+        enter.setOnAction(e -> {
+            lab.setText("---You are now in the city---");
+            enter.setDisable(true);
+        });
+        
+        
+        Scene scene = new Scene(root, 700, 700);
+        root.getChildren().addAll(leave,lab,enter,img2);
+        stage.setTitle("City");
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+        
+        System.out.println("You have left the City.");
+    }
+    
 }
+
+
