@@ -21,13 +21,13 @@ import javafx.stage.StageStyle;
  */
 public class LandMarks {
     
-    
+    //this class is currently useless because i dont know how to change 'pack' from here
+    // and yes i know its static and thats intentional
     
     
     public static void main(String[] args){
         System.out.println("Working Directory = " +
               System.getProperty("user.dir"));
-        
     }
     
     
@@ -44,6 +44,9 @@ public class LandMarks {
             case " O ":
                 City();
                 break;
+            case" A ":
+                Home();
+                break;
             default:
                 System.out.println("lmao youll never see this ☻");
         }
@@ -51,6 +54,56 @@ public class LandMarks {
         
         
     }
+    
+    public void Home(){
+        
+        
+        Stage stage = new Stage();
+        Pane root = new Pane();
+        
+        Label lab = new Label();
+        
+        Image img = new Image("house.jpg");
+        
+        ImageView img2 = new ImageView(img);
+        img2.setLayoutX(30);
+        img2.setFitHeight(488);
+        img2.setFitWidth(671);
+        lab.setText("---You are in your home---");
+        lab.setLayoutX(300);
+        lab.setLayoutY(510);
+        
+        Button leave = new Button("Embark");
+        leave.setLayoutX(40);
+        leave.setLayoutY(520);
+        leave.setOnAction(e -> {
+            stage.close();
+        });
+        
+        
+        Button enter = new Button("Re-Stock");
+        enter.setLayoutX(350);
+        enter.setLayoutY(530);
+        enter.setOnAction(e -> {
+            enter.setDisable(true);
+        });
+        
+        
+        Scene scene = new Scene(root, 700, 700);
+        root.getChildren().addAll(leave,lab,enter,img2);
+        stage.setTitle("Cave");
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+        
+        System.out.println("You have left Your Home");
+        
+        
+        
+    }
+    
     
     public void Cave(){
         Stage stage = new Stage();
@@ -194,11 +247,6 @@ public class LandMarks {
         System.out.println("You have left the City.");
     }
     
-    
-    
-    
-    
-    
     public int answer;
     
     public void question() {
@@ -244,11 +292,4 @@ public class LandMarks {
         stage1.showAndWait();
 
     }
-    
-    
-    
-    
-    
-    
-    
 }
