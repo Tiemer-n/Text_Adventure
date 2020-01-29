@@ -6,6 +6,9 @@
 package text_adventure;
 
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -36,7 +39,7 @@ public class Text_Adventure extends Application {
     public static int x = 15;
     public static int y = 15;
     public int on = 1;
-    public static BackPack pack = new BackPack(10,30,3);
+    public static BackPack pack = new BackPack(10,5,3);
     
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -45,13 +48,13 @@ public class Text_Adventure extends Application {
         
         
         
-        for (int i = 0; i < 30; i++) {
-            for (int j = 0; j < 30; j++) {
-                map[i][j] = "   ";
-                LandMarkMap[i][j]="   ";
-            }
-        }
-        //  à á â ã ä å
+//        for (int i = 0; i < 30; i++) {
+//            for (int j = 0; j < 30; j++) {
+//                map[i][j] = "   ";
+//                LandMarkMap[i][j]="   ";
+//            }
+//        }
+//        //  à á â ã ä å
         
         CreateLandmarks();
         LandMarkMap[x][y]=" A ";
@@ -164,27 +167,64 @@ public class Text_Adventure extends Application {
         launch(args);
     }
 
-    public void CreateLandmarks(){
+    public void CreateLandmarks() throws FileNotFoundException{
         Random rand = new Random();
+        String inputLine;
+        try{
+            String dirl = System.getProperty("user.dir") + "\\template1.txt";
+            BufferedReader read = new BufferedReader(new FileReader(dirl));
+
+            for (int i = 0; i < 30; i++) {
+                for (int j = 0; j < 30; j++) {
+                    inputLine = read.readLine();
+                    String item;
+                    if(null != inputLine)switch (inputLine) {
+                        case "#":
+                            item = "   ";
+                            break;
+                        case "C":
+                            item = " C ";
+                            break;
+                        case "H":
+                            item = " H ";
+                            break;
+                        case "A":
+                            item = " A ";
+                            break;
+                        case "O":
+                            item = " O ";
+                            break;
+                        default:
+                            break;
+                    }
+                    map[i][j]="d";
+                            
+                }
+            }
+        }catch(Exception e){
+            System.out.println("Error: " + e);
+        }
         
-        for (int i = 0; i < 50; i++) {
-            int k = rand.nextInt(30);
-            int u = rand.nextInt(30);
-            map[k][u]="|C|";
-            LandMarkMap[k][u] = "|C|";
-        }
-        for (int i = 0; i < 20; i++) {
-            int k = rand.nextInt(30);
-            int u = rand.nextInt(30);
-            map[k][u]="|H|";
-            LandMarkMap[k][u] = "|H|";
-        }
-        for (int i = 0; i < 5; i++) {
-            int k = rand.nextInt(30);
-            int u = rand.nextInt(30);
-            map[k][u]="|O|";
-            LandMarkMap[k][u] = "|O|";
-        }
+        
+        
+//        for (int i = 0; i < 50; i++) {
+//            int k = rand.nextInt(30);
+//            int u = rand.nextInt(30);
+//            map[k][u]="|C|";
+//            LandMarkMap[k][u] = "|C|";
+//        }
+//        for (int i = 0; i < 20; i++) {
+//            int k = rand.nextInt(30);
+//            int u = rand.nextInt(30);
+//            map[k][u]="|H|";
+//            LandMarkMap[k][u] = "|H|";
+//        }
+//        for (int i = 0; i < 5; i++) {
+//            int k = rand.nextInt(30);
+//            int u = rand.nextInt(30);
+//            map[k][u]="|O|";
+//            LandMarkMap[k][u] = "|O|";
+//        }
     }
     
     
@@ -369,20 +409,35 @@ public class Text_Adventure extends Application {
         enter.setLayoutX(350);
         enter.setLayoutY(530);
         enter.setOnAction(e -> {
-            if(pack.food != 10 ){
-                System.out.println("+" + (10-pack.food) + " food");
+            int checkw = 0;
+            int checkf = 0;
+            int f = pack.food;
+            int w = pack.water;
+            if(pack.food != 10 ){   
                 pack.food = 10;
-            }else{
-                System.out.println("+0 food");
+                checkf++;
             }
-            if (pack.water != 10){
-                System.out.println("+" + (30-pack.water) + " water");
-                pack.water = 30;
-            }else{
-                System.out.println("+0 water");
+            if (pack.water != 5){   
+                pack.water = 5;
+                checkw++;
             }
-            backPack(1);
             CreateMap();
+            if(checkf>0){
+              System.out.println("+" + (10-f) + " food");  
+            }else{
+              System.out.println("+0 food");  
+            }
+            
+            if(checkw>0){
+                System.out.println("+" + (5-w) + " water");
+            }else{
+               System.out.println("+0 water"); 
+            }
+            
+            
+            
+            
+            backPack(1);
             enter.setDisable(true);
         });
         
