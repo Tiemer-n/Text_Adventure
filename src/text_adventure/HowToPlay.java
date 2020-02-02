@@ -29,6 +29,19 @@ public class HowToPlay extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(null);
@@ -41,6 +54,61 @@ public class HowToPlay extends javax.swing.JFrame {
         jLabel2.setText("You move with these");
         getContentPane().add(jLabel2);
         jLabel2.setBounds(40, 10, 170, 50);
+
+        jLabel4.setText("|O|");
+        getContentPane().add(jLabel4);
+        jLabel4.setBounds(230, 210, 30, 16);
+
+        jLabel5.setText("|C|");
+        getContentPane().add(jLabel5);
+        jLabel5.setBounds(230, 130, 30, 30);
+
+        jLabel6.setText("|H|");
+        getContentPane().add(jLabel6);
+        jLabel6.setBounds(230, 170, 30, 20);
+
+        jLabel7.setText("House");
+        getContentPane().add(jLabel7);
+        jLabel7.setBounds(270, 170, 50, 20);
+
+        jLabel8.setText("City");
+        getContentPane().add(jLabel8);
+        jLabel8.setBounds(270, 210, 40, 16);
+
+        jLabel9.setText("Cave");
+        getContentPane().add(jLabel9);
+        jLabel9.setBounds(270, 140, 28, 16);
+
+        jLabel10.setText("Water: 10");
+        getContentPane().add(jLabel10);
+        jLabel10.setBounds(240, 80, 70, 20);
+
+        jLabel11.setText("Food: 10");
+        getContentPane().add(jLabel11);
+        jLabel11.setBounds(240, 60, 48, 16);
+
+        jLabel12.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel12.setText("These go down every step you take");
+        getContentPane().add(jLabel12);
+        jLabel12.setBounds(360, 60, 220, 16);
+
+        jLabel13.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel13.setText("If they reach 0 its GAME OVER");
+        getContentPane().add(jLabel13);
+        jLabel13.setBounds(360, 80, 190, 16);
+
+        jLabel15.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel15.setText("Complete these landmarks to gain materials");
+        getContentPane().add(jLabel15);
+        jLabel15.setBounds(350, 130, 260, 30);
+
+        jLabel3.setText("Each one you will have to fight somthing or someone  in order to proceed");
+        getContentPane().add(jLabel3);
+        jLabel3.setBounds(350, 160, 440, 20);
+
+        jLabel14.setText("The materials you get can be useed to make bad to hold more water or armour to increase health");
+        getContentPane().add(jLabel14);
+        jLabel14.setBounds(140, 270, 570, 16);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -82,6 +150,19 @@ public class HowToPlay extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     // End of variables declaration//GEN-END:variables
 }

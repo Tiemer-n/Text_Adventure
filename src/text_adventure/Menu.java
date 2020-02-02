@@ -70,7 +70,7 @@ public class Menu extends javax.swing.JFrame {
         //how to play button 
         JFrame HowTo = new HowToPlay();
         
-        HowTo.setSize(600, 500);
+        HowTo.setSize(824, 343);
         
         HowTo.show();
        

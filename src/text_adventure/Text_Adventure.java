@@ -33,9 +33,9 @@ public class Text_Adventure extends Application {
     public static int x = 15;
     public static int y = 15;
     public int on = 1;
-    public static int MaxWater = 10;
+    public static int MaxWater = 1000;
     public static int MaxFood = 10;
-    public static BackPack pack = new BackPack(MaxFood,MaxWater,0,0,0,0,0,0,0);
+    public static BackPack pack = new BackPack(MaxFood,MaxWater,0,0,0,0,0,0,0,0);
     
     
     @Override
@@ -194,7 +194,7 @@ public class Text_Adventure extends Application {
                 break;
         }
         try{
-            File dirl = new File("res/"+ Pick);
+            File dirl = new File("res/template1.txt");
             Scanner read = new Scanner(dirl);
             for (int i = 0; i < 30; i++) {
                 String line = read.nextLine();
@@ -302,7 +302,7 @@ public class Text_Adventure extends Application {
         String Knife = Integer.toString(pack.getKnife());
         String Leather = Integer.toString(pack.getLeather());
         String Wood = Integer.toString(pack.getWood());
-        
+        String Medicine = Integer.toString(pack.medicine);
         
         for (int i = 0; i < 50; i++) {
             System.out.println("");
@@ -314,10 +314,21 @@ public class Text_Adventure extends Application {
         System.out.println("BackPack: ");
         System.out.println("Food: " + Food);
         System.out.println("Water: " + Water);
-        System.out.println("Leather: " + Leather);
-        System.out.println("Wood: " + Wood);
-        System.out.println("Iron: " + Iron);
-        System.out.println("Steel: " + Steel);
+        if(pack.leather > 0){
+            System.out.println("Leather: " + Leather);
+        }
+        if(pack.wood > 0){
+            System.out.println("Wood: " + Wood);
+        }
+        if(pack.iron > 0){
+            System.out.println("Iron: " + Iron);
+        }
+        if(pack.steel > 0){
+            System.out.println("Steel: " + Steel);
+        }
+        if(pack.medicine > 0){
+            System.out.println("Medicine: " + Medicine);
+        }
         if("1".equals(Sword)){
             System.out.println("Weapon: Sword");
         }else if ("1".equals(Knife)){
@@ -518,7 +529,7 @@ public class Text_Adventure extends Application {
             final int Steel = rand.nextInt(3);
             root.getChildren().removeAll(leave,enter);
             lab1.setText("---You are now in a cave---");
-            GenerateAttack(101,type); //30% cahnce
+            GenerateAttack(101,type,"C"); //30% cahnce
 
             if(Leather > 0 || wood > 0){
                 Button pickUp = new Button("Pick up Items"); pickUp.setLayoutX(300); pickUp.setLayoutY(570);
@@ -552,13 +563,13 @@ public class Text_Adventure extends Application {
             enterFurther.setOnAction(a -> {
                 
                 
-                final int Leather2 = rand.nextInt(2);
-                final int wood2 = rand.nextInt(2);
+                final int Leather2 = rand.nextInt(4);
+                final int wood2 = rand.nextInt(4);
                 final int Iron2 = rand.nextInt(3);
                 final int Steel2 = rand.nextInt(3);
                 root.getChildren().removeAll(enterFurther,leave);
                 lab1.setText("You go even deeper into the cave");
-                GenerateAttack(101,type);
+                GenerateAttack(101,type,"C");
                 
                 if(Leather > 0 || wood > 0){
                     Button pickUp2 = new Button("Pick up Items"); pickUp2.setLayoutX(300); pickUp2.setLayoutY(570);
@@ -605,7 +616,7 @@ public class Text_Adventure extends Application {
                 FinalVenture.setOnAction(i -> {
                     
                     root.getChildren().remove(FinalVenture);
-                    GenerateAttack(101,type);
+                    GenerateAttack(101,type,"C");
                     
                     lab1.setText("Youve reached the end of the cave");
                     lab2.setText("You find Valuable goods ");
@@ -669,63 +680,193 @@ public class Text_Adventure extends Application {
     
     public void House(int type){
         System.out.println("Type: " + type);
+        Random rand = new Random();
         
-        
-        switch (type){
-            case 1:
-                Stage stage = new Stage();
-                Pane root = new Pane();
-                Label lab = new Label();
-                Image img = new Image("house.png");
-                ImageView img2 = new ImageView(img);
-                img2.setFitHeight(488);
-                img2.setFitWidth(671);
-                img2.setLayoutX(20);
-                lab.setText("---You are standing by the house---");
-                lab.setLayoutX(300);
-                lab.setLayoutY(510);
-                Button leave = new Button("Leave");
-                leave.setLayoutX(40);
-                leave.setLayoutY(520);
-                leave.setOnAction(e -> {
-                    stage.close();
+        Stage stage = new Stage();
+        Pane root = new Pane();
+        Label lab1 = new Label("---You are standing outside the house---");
+        lab1.setLayoutX(300);
+        lab1.setLayoutY(510);
+
+        Label lab2 = new Label();
+        lab2.setLayoutX(300);
+        lab2.setLayoutY(530);
+
+        Label lab3 = new Label();
+        lab3.setLayoutX(300);
+        lab3.setLayoutY(550);
+
+
+        Image img = new Image("house.png");
+        ImageView img2 = new ImageView(img);
+        img2.setLayoutX(30);
+        Button enter = new Button("enter the house");
+
+        Button leave = new Button("Leave");
+        leave.setLayoutX(40);
+        leave.setLayoutY(520);
+        leave.setOnAction(e -> {
+            stage.close();
+        }); 
+        enter.setLayoutX(100);
+        enter.setLayoutY(520);
+        //first layer --------------------------------------------------------------------------------------------------------
+        enter.setOnAction(e -> {
+            final int Leather = rand.nextInt(3); 
+            final int wood = rand.nextInt(3); 
+            final int Iron = rand.nextInt(3);
+            final int Steel = rand.nextInt(3);
+            root.getChildren().removeAll(leave,enter);
+            lab1.setText("---You are now inside the Front room---");
+            GenerateAttack(101,type,"H"); //30% cahnce
+
+            if(Leather > 0 || wood > 0){
+                Button pickUp = new Button("Pick up Items"); pickUp.setLayoutX(300); pickUp.setLayoutY(570);
+                root.getChildren().add(pickUp);
+                pickUp.setOnAction(a -> {
+                    switch (type){
+                        case 1:
+                            pack.leather += Leather ;
+                            pack.wood += wood;
+                            lab3.setText("you picked up "+Leather+" leather and "+wood+" wood");
+                            break;
+                        case 3:
+                            pack.iron += Iron ;
+                            pack.steel += Steel;
+                            lab3.setText("you picked up "+Iron+" iron and "+Steel+" steel");
+                            break;
+                        case 2:
+                            pack.leather += Leather ;
+                            pack.iron += Iron;
+                            lab3.setText("you picked up "+Leather+" leather and "+Iron+" iron");
+                    }
+                    root.getChildren().remove(pickUp);
                 });
+                lab2.setText("You search around and find valued items");
+
+            }else{
+                lab2.setText("you couldnt find anything in the In the room");
+            }
+            Button enterFurther = new Button ("Go Upstairs"); enterFurther.setLayoutX(300); enterFurther.setLayoutY(600);
+            //second layer ---------------------------------------------------------------------------------------------------
+            enterFurther.setOnAction(a -> {
                 
-                Button enter = new Button("enter the house");
-                enter.setLayoutX(350);
-                enter.setLayoutY(530);
-                enter.setOnAction(e -> {
-                    lab.setText("---You are now in the house---");
-                    enter.setDisable(true);
+                
+                final int Leather2 = rand.nextInt(2);
+                final int wood2 = rand.nextInt(2);
+                final int Iron2 = rand.nextInt(3);
+                final int Steel2 = rand.nextInt(3);
+                root.getChildren().removeAll(enterFurther,leave);
+                lab1.setText("You go upstairs to the second floor");
+                lab3.setText("");
+                GenerateAttack(101,type,"H");
+                
+                if(Leather > 0 || wood > 0){
+                    Button pickUp2 = new Button("Pick up Items"); pickUp2.setLayoutX(300); pickUp2.setLayoutY(570);
+                    root.getChildren().add(pickUp2);
+                    pickUp2.setOnAction(i -> {
+                        switch (type){
+                        case 1:
+                            pack.leather += Leather2 ;
+                            pack.wood += wood2;
+                            lab3.setText("you picked up "+Leather2+" leather and "+wood2+" wood");
+                            break;
+                        case 3:
+                            pack.iron += Iron2 ;
+                            pack.steel += Steel2;
+                            lab3.setText("you picked up "+Iron2+" iron and "+Steel2+" steel");
+                            break;
+                        case 2:
+                            pack.leather += Leather2 ;
+                            pack.iron += Iron2;
+                            lab3.setText("you picked up "+Leather2+" leather and "+Iron2+" iron");
+                    }
+                        
+                        root.getChildren().remove(pickUp2);
+                    });
+                }
+                
+                switch (type){
+                    case 1:
+                        lab2.setText("You find a well preserved single bed room");
+                        break;
+                    case 2:
+                        lab2.setText("All you see is the ruins of what used to be a kitchen");
+                        break;
+                    case 3:
+                        lab2.setText("You walk into a blackend room, it has clearly suffered many burns");
+                        break;
+                }
+                
+                Button FinalVenture = new Button("Go into the basement"); FinalVenture.setLayoutX(300); FinalVenture.setLayoutY(600);
+                
+
+                // final layer ----------------------------------------------------------------
+                FinalVenture.setOnAction(i -> {
+                    
+                    root.getChildren().remove(FinalVenture);
+                    GenerateAttack(101,type,"H");
+                    
+                    lab1.setText("Youve reached the last room of the house");
+                    lab2.setText("You find Valuable goods ");
+                    lab3.setText("");
+                    Button pickUp3 = new Button("Pick up Items"); pickUp3.setLayoutX(300); pickUp3.setLayoutY(570);
+                    root.getChildren().add(pickUp3);
+                    pickUp3.setOnAction(u -> {
+                        switch (type){
+                        case 1:
+                            pack.leather += 4 ;
+                            pack.wood += 4;
+                            lab3.setText("you picked up 4 leather and 4 wood");
+                            break;
+                        case 3:
+                            pack.iron += 4;
+                            pack.steel += 4;
+                            lab3.setText("you picked up 4 iron and 4 steel");
+                            break;
+                        case 2:
+                            pack.leather += 4 ;
+                            pack.iron += 4;
+                            lab3.setText("you picked up 4 leather and 4 iron");
+                    }
+                        
+                        root.getChildren().remove(pickUp3);
+                    });
+                    
+                    Button FinalLeave = new Button ("leave"); 
+                    FinalLeave.setLayoutX(40);
+                    FinalLeave.setLayoutY(520);
+                    FinalLeave.setOnAction(u -> {
+                       LandMarkMap[x][y] = " H ";
+                        System.out.println("You have completed this house +3 water");
+                        pack.water += 3;
+                       stage.close();
+                    });
+                    root.getChildren().add(FinalLeave);
+                    
                 });
-                Scene scene = new Scene(root, 700, 700);
-                root.getChildren().addAll(leave,lab,enter,img2);
-                stage.setTitle("House");
-                stage.setScene(scene);
-                stage.setResizable(false);
-                stage.initStyle(StageStyle.UNDECORATED);
-                stage.initModality(Modality.APPLICATION_MODAL);
-                stage.showAndWait();
-                System.out.println("You have left the House.");
-                break;
-            case 2:
-                
-                
-                break;
-                
-            case 3:
-                
-                
-                break;
-            
-            
-            
-        }
+                //final layer --------------------------------------------------------------
+                root.getChildren().add(FinalVenture);
+            });
+            //second layer -----------------------------------------
+            root.getChildren().add(enterFurther);
+        }); 
+        //first layer --------------------------------------------------------
+
+
+        Scene scene = new Scene(root, 700, 700);
+        root.getChildren().addAll(leave,lab1,lab2,lab3,enter,img2);
+        stage.setTitle("House");
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+        System.out.println("You have left the House.");
 
     }
     
     public void City(){
-        System.out.println("Type: 3");
         
         Stage stage = new Stage();
         Pane root = new Pane();
@@ -776,7 +917,7 @@ public class Text_Adventure extends Application {
     }
     
     
-    public void GenerateAttack(int chance, int difficulty)  {
+    public void GenerateAttack(int chance, int difficulty, String type)  {
         // the number is the paramater that the number out of 100 needs to meet
         // e.g. chance = 2 means that the number needs to be 2 or lower (or 2% chance or getting attacked)
         // in order for the attacksequence to run 
@@ -786,11 +927,11 @@ public class Text_Adventure extends Application {
         int isAttack = rand.nextInt(100);
         isAttack++;
         if(isAttack <= chance){
-            AttackSequence(difficulty);
+            AttackSequence(difficulty,type);
         }
     }
     
-    public void AttackSequence(int difficulty){
+    public void AttackSequence(int difficulty, String type){
        // 0 = type 1 wilderness
        // 1 = type 1 cave or house  
        // 2 = type 2 cave or house 
