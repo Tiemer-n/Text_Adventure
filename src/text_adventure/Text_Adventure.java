@@ -1,18 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package text_adventure;
 
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
@@ -22,10 +16,10 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javax.swing.JFrame;
 
 /**
  *
@@ -39,25 +33,17 @@ public class Text_Adventure extends Application {
     public static int x = 15;
     public static int y = 15;
     public int on = 1;
-    public static BackPack pack = new BackPack(10,5,3);
+    public static int MaxWater = 10;
+    public static int MaxFood = 10;
+    public static BackPack pack = new BackPack(MaxFood,MaxWater,0,0,0,0,0,0,0);
+    
     
     @Override
     public void start(Stage primaryStage) throws Exception{
         
-        LandMarks land = new LandMarks();
-        
-        
-        
-//        for (int i = 0; i < 30; i++) {
-//            for (int j = 0; j < 30; j++) {
-//                map[i][j] = "   ";
-//                LandMarkMap[i][j]="   ";
-//            }
-//        }
-//        //  à á â ã ä å
+            
         
         CreateLandmarks();
-        LandMarkMap[x][y]=" A ";
         map[x][y] = " ð ";
         CreateMap();
 
@@ -65,14 +51,9 @@ public class Text_Adventure extends Application {
         Button down = new Button("↓");
         Button left = new Button("←");
         Button right = new Button("→");
-        Button backpack = new Button("BackPack");
         
         //-----------------------------
-        backpack.setLayoutY(180);
-        backpack.setLayoutX(75);
-        backpack.setOnAction(e -> {
-            backPack(0);
-        });
+        
         
         Pane root = new Pane();
 
@@ -81,10 +62,12 @@ public class Text_Adventure extends Application {
                 MovePlayer(-1, 0);
                 pack.setWater(pack.getWater()-1);
                 CreateMap();
+                CheckHealth();
             }
             else if (Check(-1,0) == 2){
                 MovePlayer(-1, 0);   
                 CreateMap(); 
+                CheckHealth();
                 pack.setWater(pack.getWater()-1);
                 runLandmark(LandMarkMap[x][y]);
             }
@@ -100,11 +83,13 @@ public class Text_Adventure extends Application {
                 MovePlayer(1, 0);
                 pack.setWater(pack.getWater()-1);
                 CreateMap();  
+                CheckHealth();
             }
             else if ( Check(1,0) == 2){
                 MovePlayer(1, 0);
                 pack.setWater(pack.getWater()-1);
                 CreateMap();
+                CheckHealth();
                 runLandmark(LandMarkMap[x][y]);
             }
             
@@ -118,10 +103,12 @@ public class Text_Adventure extends Application {
                 MovePlayer(0, -1);
                 pack.setWater(pack.getWater()-1);
                 CreateMap();
+                CheckHealth();
             }
             else if ( Check(0,-1) == 2){
                 MovePlayer(0, -1); 
                 CreateMap(); 
+                CheckHealth();
                 pack.setWater(pack.getWater()-1);
                 runLandmark(LandMarkMap[x][y]);
             }
@@ -136,11 +123,13 @@ public class Text_Adventure extends Application {
                 MovePlayer(0, 1);
                 pack.setWater(pack.getWater()-1);
                 CreateMap();
+                CheckHealth();
             }
             else if ( Check(0,1) == 2){
                 MovePlayer(0, 1);
                 pack.setWater(pack.getWater()-1);
                 CreateMap();
+                CheckHealth();
                 runLandmark(LandMarkMap[x][y]);
             }
             
@@ -149,7 +138,7 @@ public class Text_Adventure extends Application {
         right.setLayoutY(70);
         right.setStyle("-fx-font-size:20");
 
-        root.getChildren().addAll(up, down, left, right,backpack);
+        root.getChildren().addAll(up, down, left, right);
 
         Scene scene = new Scene(root, 200, 200);
 
@@ -164,67 +153,82 @@ public class Text_Adventure extends Application {
      * @throws java.lang.InterruptedException
      */
     public static void main(String[] args) throws InterruptedException {
+        
+        JFrame menu = new Menu();
+        menu.setSize(600, 500);
+        menu.show();
+        
+        
         launch(args);
+    }
+    
+    
+    public void CheckHealth(){
+        if(pack.water == 0){
+            System.out.println("You've ran out of water");
+            System.out.println("It becomes impossible to go on");
+        }else if (pack.water <= -1){
+            System.out.println("");
+            System.out.println("You ran out of water and have died of thirst");
+            System.out.println("");
+            System.out.println("GAME OVER");
+            System.exit(0);
+        }   
     }
 
     public void CreateLandmarks() throws FileNotFoundException{
         Random rand = new Random();
-        String inputLine;
+        String Pick= " ";
+        int picktemp = rand.nextInt(3);
+        switch (picktemp) {
+            case 0:
+                Pick = "template1.txt";
+                break;
+            case 1:
+                Pick = "template2.txt";
+                break;
+            case 2:
+                Pick = "template3.txt";
+                break;
+            default:
+                break;
+        }
         try{
-            String dirl = System.getProperty("user.dir") + "\\template1.txt";
-            BufferedReader read = new BufferedReader(new FileReader(dirl));
-
+            File dirl = new File("res/"+ Pick);
+            Scanner read = new Scanner(dirl);
             for (int i = 0; i < 30; i++) {
+                String line = read.nextLine();
+                String item= null;
                 for (int j = 0; j < 30; j++) {
-                    inputLine = read.readLine();
-                    String item;
-                    if(null != inputLine)switch (inputLine) {
-                        case "#":
+                    switch (line.charAt(j)) {
+                        case '#':
                             item = "   ";
                             break;
-                        case "C":
-                            item = " C ";
+                        case 'C':
+                            item = "|C|";
                             break;
-                        case "H":
-                            item = " H ";
+                        case 'H':
+                            item = "|H|";
                             break;
-                        case "A":
+                        case 'A':
                             item = " A ";
                             break;
-                        case "O":
-                            item = " O ";
+                        case 'O':
+                            item = "|O|";
                             break;
                         default:
                             break;
-                    }
-                    map[i][j]="d";
-                            
+                        }
+                    map[i][j]=item;
+                    LandMarkMap[i][j]=item;
                 }
+                
             }
+            //---
         }catch(Exception e){
             System.out.println("Error: " + e);
         }
         
-        
-        
-//        for (int i = 0; i < 50; i++) {
-//            int k = rand.nextInt(30);
-//            int u = rand.nextInt(30);
-//            map[k][u]="|C|";
-//            LandMarkMap[k][u] = "|C|";
-//        }
-//        for (int i = 0; i < 20; i++) {
-//            int k = rand.nextInt(30);
-//            int u = rand.nextInt(30);
-//            map[k][u]="|H|";
-//            LandMarkMap[k][u] = "|H|";
-//        }
-//        for (int i = 0; i < 5; i++) {
-//            int k = rand.nextInt(30);
-//            int u = rand.nextInt(30);
-//            map[k][u]="|O|";
-//            LandMarkMap[k][u] = "|O|";
-//        }
     }
     
     
@@ -285,49 +289,20 @@ public class Text_Adventure extends Application {
     }
 
     
-    public static void backPack(int mode){
-        
-        Stage stage = new Stage();
-        Pane root = new VBox();
-        Label food = new Label();
-        food.setText("Food: " + Integer.toString(pack.getFood()));
-        food.setStyle("-fx-font-size:15");
-        
-        Label water = new Label();
-        water.setText("Water: " + Integer.toString(pack.getWater()));
-        water.setStyle("-fx-font-size:15");
-        
-        Label torches = new Label();
-        torches.setText("Torches: " + Integer.toString(pack.getTorches()));
-        torches.setStyle("-fx-font-size:15");
-        
-        
-        Button btn = new Button("Close");
-        btn.setLayoutY(20);
-        btn.setOnAction(e -> {
-            stage.close();
-        });
-        
-        if(mode == 1){
-            food.setText("Food: " + Integer.toString(pack.getFood()));
-            torches.setText("Torches: " + Integer.toString(pack.getTorches()));
-            water.setText("Water: " + Integer.toString(pack.getWater()));
-        }else if (mode == 0){
-            root.getChildren().addAll(btn,food,water,torches);
-            Scene scene = new Scene(root,100,150);
-            stage.setTitle("BackPack");
-            stage.setScene(scene);
-            stage.initStyle(StageStyle.UTILITY);
-            stage.setResizable(false);
-            stage.show();
-        }
-    }
+   
     
     
     public static void CreateMap() {
         String Food = Integer.toString(pack.getFood());
         String Water = Integer.toString(pack.getWater());
-        String Torches = Integer.toString(pack.getTorches());
+        String Iron = Integer.toString(pack.getIron());
+        String Steel = Integer.toString(pack.getSteel());
+        String woodenClub = Integer.toString(pack.getWoodenClub());
+        String Sword = Integer.toString(pack.getSword());
+        String Knife = Integer.toString(pack.getKnife());
+        String Leather = Integer.toString(pack.getLeather());
+        String Wood = Integer.toString(pack.getWood());
+        
         
         for (int i = 0; i < 50; i++) {
             System.out.println("");
@@ -339,8 +314,17 @@ public class Text_Adventure extends Application {
         System.out.println("BackPack: ");
         System.out.println("Food: " + Food);
         System.out.println("Water: " + Water);
-        System.out.println("Torches: " + Torches);
-        System.out.println("");
+        System.out.println("Leather: " + Leather);
+        System.out.println("Wood: " + Wood);
+        System.out.println("Iron: " + Iron);
+        System.out.println("Steel: " + Steel);
+        if("1".equals(Sword)){
+            System.out.println("Weapon: Sword");
+        }else if ("1".equals(Knife)){
+            System.out.println("Weapon: Knife");
+        }else if ("1".equals(woodenClub)){
+            System.out.println("Weapon: WoodenClub");
+        }
         for (int i = 0; i < 30; i++) {
             System.out.print("___");
         }
@@ -357,14 +341,51 @@ public class Text_Adventure extends Application {
     }
     
      public void runLandmark(String entity){
+        //checking where the landmark is on the map
+        int type =0;
         
+        //dont try to judge this was the only way i could carefully do it without making mistakes
         
+        //type 1
+        if(x >= 10 && x <= 20 && y >= 10 && y <= 20){
+            type = 1;
+        }
+        //type 2 
+        if ( (x > 5 && x < 10) && (y > 5  && y < 25) ){
+            type = 2;
+        }
+        if( x > 20 && x < 25 && (y > 5  && y < 25)){
+            type = 2;
+        }
+        if(y > 5 && y < 10 && (x > 5 && x < 25) ){
+            type =2;
+        }
+        if(y > 20 && y < 25 && (x > 5 && x < 25) ){
+            type =2;
+        }
+        //type 2 
+        
+        //type 3
+        if(x >= 0 && x <= 5 && y >= 0 && y < 30 ){
+            type = 3;
+        }        
+        if(x >= 25 && x < 30 && y >= 0 && y < 30){
+            type = 3;
+        }        
+        if (y >= 0 && y <= 5 && x >= 0 && x < 30 ){
+            type = 3;
+        }        
+        if(y >= 25 & y < 30 && x >= 0 && x < 30){
+            type =3;
+        }
+        //type 3
+
         switch (entity){
             case "|C|":
-                Cave();
+                Cave(type);
                 break;
             case "|H|":
-                House();
+                House(type);
                 break;
             case "|O|":
                 City();
@@ -372,14 +393,17 @@ public class Text_Adventure extends Application {
             case" A ":
                 Home();
                 break;
+            case " C ":
+                System.out.println("This cave has already been explored");
+                break;
+            case " H ":
+                System.out.println("This house has already been explored");
+                break;
             default:
                 System.out.println("lmao youll never see this ☻");
         }
-        
-        
-        
     }
-    
+     
     public void Home(){
         
         Stage stage = new Stage();
@@ -390,7 +414,7 @@ public class Text_Adventure extends Application {
         Image img = new Image("house.jpg");
         
         ImageView img2 = new ImageView(img);
-        img2.setLayoutX(30);
+        img2.setLayoutX(15);
         img2.setFitHeight(488);
         img2.setFitWidth(671);
         lab.setText("---You are in your home---");
@@ -413,31 +437,27 @@ public class Text_Adventure extends Application {
             int checkf = 0;
             int f = pack.food;
             int w = pack.water;
-            if(pack.food != 10 ){   
-                pack.food = 10;
+            if(pack.food < MaxFood ){   
+                pack.food = MaxFood;
                 checkf++;
             }
-            if (pack.water != 5){   
-                pack.water = 5;
+            if (pack.water < MaxWater){   
+                pack.water = MaxWater;
                 checkw++;
             }
             CreateMap();
             if(checkf>0){
-              System.out.println("+" + (10-f) + " food");  
+              System.out.println("+" + (MaxFood-f) + " food");  
             }else{
               System.out.println("+0 food");  
             }
             
             if(checkw>0){
-                System.out.println("+" + (5-w) + " water");
+                System.out.println("+" + (MaxWater-w) + " water");
             }else{
                System.out.println("+0 water"); 
             }
             
-            
-            
-            
-            backPack(1);
             enter.setDisable(true);
         });
         
@@ -458,136 +478,281 @@ public class Text_Adventure extends Application {
     }
     
     
-    public void Cave(){
+    public void Cave(int type){
+        System.out.println("Type: " + type);
+        Random rand = new Random();
+        
         Stage stage = new Stage();
         Pane root = new Pane();
-        
-        Label lab = new Label();
-        
+        Label lab1 = new Label("---You are standing by the cave---");
+        lab1.setLayoutX(300);
+        lab1.setLayoutY(510);
+
+        Label lab2 = new Label();
+        lab2.setLayoutX(300);
+        lab2.setLayoutY(530);
+
+        Label lab3 = new Label();
+        lab3.setLayoutX(300);
+        lab3.setLayoutY(550);
+
+
         Image img = new Image("cave.png");
-        
         ImageView img2 = new ImageView(img);
         img2.setLayoutX(30);
-        
-        
-        Button collect = new Button ("Collect +1 meat");
         Button enter = new Button("enter the cave");
-        
-        lab.setText("---You are standing by the cave---");
-        lab.setLayoutX(300);
-        lab.setLayoutY(510);
-        
+
         Button leave = new Button("Leave");
         leave.setLayoutX(40);
         leave.setLayoutY(520);
         leave.setOnAction(e -> {
             stage.close();
-        });
-        
-        enter.setLayoutX(350);
-        enter.setLayoutY(530);
+        }); 
+        enter.setLayoutX(100);
+        enter.setLayoutY(520);
+        //first layer --------------------------------------------------------------------------------------------------------
         enter.setOnAction(e -> {
-            lab.setText("---You are now in a cave---");
-            root.getChildren().add(collect);
-            root.getChildren().remove(enter);
-        });
-        
-        collect.setLayoutX(350);
-        collect.setLayoutY(530);
-        collect.setOnAction(e ->{ 
-            pack.food++;
-            collect.setDisable(true);
-        });
-        
-        
-        
-        
+            final int Leather = rand.nextInt(3); 
+            final int wood = rand.nextInt(3); 
+            final int Iron = rand.nextInt(3);
+            final int Steel = rand.nextInt(3);
+            root.getChildren().removeAll(leave,enter);
+            lab1.setText("---You are now in a cave---");
+            GenerateAttack(101,type); //30% cahnce
+
+            if(Leather > 0 || wood > 0){
+                Button pickUp = new Button("Pick up Items"); pickUp.setLayoutX(300); pickUp.setLayoutY(570);
+                root.getChildren().add(pickUp);
+                pickUp.setOnAction(a -> {
+                    switch (type){
+                        case 1:
+                            pack.leather += Leather ;
+                            pack.wood += wood;
+                            lab3.setText("you picked up "+Leather+" leather and "+wood+" wood");
+                            break;
+                        case 3:
+                            pack.iron += Iron ;
+                            pack.steel += Steel;
+                            lab3.setText("you picked up "+Iron+" iron and "+Steel+" steel");
+                            break;
+                        case 2:
+                            pack.leather += Leather ;
+                            pack.iron += Iron;
+                            lab3.setText("you picked up "+Leather+" leather and "+Iron+" iron");
+                    }
+                    root.getChildren().remove(pickUp);
+                });
+                lab2.setText("You search around and find valued items");
+
+            }else{
+                lab2.setText("you couldnt find anything in the cave");
+            }
+            Button enterFurther = new Button ("EnterFurther"); enterFurther.setLayoutX(300); enterFurther.setLayoutY(600);
+            //second layer ---------------------------------------------------------------------------------------------------
+            enterFurther.setOnAction(a -> {
+                
+                
+                final int Leather2 = rand.nextInt(2);
+                final int wood2 = rand.nextInt(2);
+                final int Iron2 = rand.nextInt(3);
+                final int Steel2 = rand.nextInt(3);
+                root.getChildren().removeAll(enterFurther,leave);
+                lab1.setText("You go even deeper into the cave");
+                GenerateAttack(101,type);
+                
+                if(Leather > 0 || wood > 0){
+                    Button pickUp2 = new Button("Pick up Items"); pickUp2.setLayoutX(300); pickUp2.setLayoutY(570);
+                    root.getChildren().add(pickUp2);
+                    pickUp2.setOnAction(i -> {
+                        switch (type){
+                        case 1:
+                            pack.leather += Leather2 ;
+                            pack.wood += wood2;
+                            lab3.setText("you picked up "+Leather2+" leather and "+wood2+" wood");
+                            break;
+                        case 3:
+                            pack.iron += Iron2 ;
+                            pack.steel += Steel2;
+                            lab3.setText("you picked up "+Iron2+" iron and "+Steel2+" steel");
+                            break;
+                        case 2:
+                            pack.leather += Leather2 ;
+                            pack.iron += Iron2;
+                            lab3.setText("you picked up "+Leather2+" leather and "+Iron2+" iron");
+                    }
+                        
+                        root.getChildren().remove(pickUp2);
+                    });
+                }
+                
+                switch (type){
+                    case 1:
+                        lab2.setText("you come across an abandond camp");
+                        break;
+                    case 2:
+                        lab2.setText("you see a pile of dead miners on the floor");
+                        break;
+                    case 3:
+                        lab2.setText("you can see the remains of what used to be a massive spiders nest");
+                        break;
+                }
+                lab3.setText("You search around for valued items");
+                
+                Button FinalVenture = new Button("Enter Deeper"); FinalVenture.setLayoutX(300); FinalVenture.setLayoutY(600);
+                
+
+                // final layer ----------------------------------------------------------------
+                FinalVenture.setOnAction(i -> {
+                    
+                    root.getChildren().remove(FinalVenture);
+                    GenerateAttack(101,type);
+                    
+                    lab1.setText("Youve reached the end of the cave");
+                    lab2.setText("You find Valuable goods ");
+                    lab3.setText("");
+                    Button pickUp3 = new Button("Pick up Items"); pickUp3.setLayoutX(300); pickUp3.setLayoutY(570);
+                    root.getChildren().add(pickUp3);
+                    pickUp3.setOnAction(u -> {
+                        switch (type){
+                        case 1:
+                            pack.leather += 4 ;
+                            pack.wood += 4;
+                            lab3.setText("you picked up 4 leather and 4 wood");
+                            break;
+                        case 3:
+                            pack.iron += 4;
+                            pack.steel += 4;
+                            lab3.setText("you picked up 4 iron and 4 steel");
+                            break;
+                        case 2:
+                            pack.leather += 4 ;
+                            pack.iron += 4;
+                            lab3.setText("you picked up 4 leather and 4 iron");
+                    }
+                        
+                        root.getChildren().remove(pickUp3);
+                    });
+                    
+                    Button FinalLeave = new Button ("leave"); 
+                    FinalLeave.setLayoutX(40);
+                    FinalLeave.setLayoutY(520);
+                    FinalLeave.setOnAction(u -> {
+                       LandMarkMap[x][y] = " C ";
+                        System.out.println("You have completed this cave +3 water");
+                        pack.water += 3;
+                       stage.close();
+                    });
+                    root.getChildren().add(FinalLeave);
+                    
+                });
+                //final layer --------------------------------------------------------------
+                root.getChildren().add(FinalVenture);
+            });
+            //second layer -----------------------------------------
+            root.getChildren().add(enterFurther);
+        }); 
+        //first layer --------------------------------------------------------
+
+
         Scene scene = new Scene(root, 700, 700);
-        root.getChildren().addAll(leave,lab,enter,img2);
+        root.getChildren().addAll(leave,lab1,lab2,lab3,enter,img2);
         stage.setTitle("Cave");
         stage.setScene(scene);
         stage.setResizable(false);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
-        
         System.out.println("You have left the Cave.");
+        
         
     }
     
-    public void House(){
-        Stage stage = new Stage();
-        Pane root = new Pane();
-        
-        Label lab = new Label();
-        
-        Image img = new Image("house.png");
-        ImageView img2 = new ImageView(img);
-        
-        img2.setFitHeight(488);
-        img2.setFitWidth(671);
-        img2.setLayoutX(20);
-        
-        lab.setText("---You are standing by the house---");
-        lab.setLayoutX(300);
-        lab.setLayoutY(510);
-        
-        Button leave = new Button("Leave");
-        leave.setLayoutX(40);
-        leave.setLayoutY(520);
-        leave.setOnAction(e -> {
-            stage.close();
-        });
+    public void House(int type){
+        System.out.println("Type: " + type);
         
         
-        Button enter = new Button("enter the house");
-        enter.setLayoutX(350);
-        enter.setLayoutY(530);
-        enter.setOnAction(e -> {
-            lab.setText("---You are now in the house---");
-            enter.setDisable(true);
-        });
-        
-        
-        Scene scene = new Scene(root, 700, 700);
-        root.getChildren().addAll(leave,lab,enter,img2);
-        stage.setTitle("House");
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait();
-        
-        System.out.println("You have left the House.");
+        switch (type){
+            case 1:
+                Stage stage = new Stage();
+                Pane root = new Pane();
+                Label lab = new Label();
+                Image img = new Image("house.png");
+                ImageView img2 = new ImageView(img);
+                img2.setFitHeight(488);
+                img2.setFitWidth(671);
+                img2.setLayoutX(20);
+                lab.setText("---You are standing by the house---");
+                lab.setLayoutX(300);
+                lab.setLayoutY(510);
+                Button leave = new Button("Leave");
+                leave.setLayoutX(40);
+                leave.setLayoutY(520);
+                leave.setOnAction(e -> {
+                    stage.close();
+                });
+                
+                Button enter = new Button("enter the house");
+                enter.setLayoutX(350);
+                enter.setLayoutY(530);
+                enter.setOnAction(e -> {
+                    lab.setText("---You are now in the house---");
+                    enter.setDisable(true);
+                });
+                Scene scene = new Scene(root, 700, 700);
+                root.getChildren().addAll(leave,lab,enter,img2);
+                stage.setTitle("House");
+                stage.setScene(scene);
+                stage.setResizable(false);
+                stage.initStyle(StageStyle.UNDECORATED);
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.showAndWait();
+                System.out.println("You have left the House.");
+                break;
+            case 2:
+                
+                
+                break;
+                
+            case 3:
+                
+                
+                break;
+            
+            
+            
+        }
+
     }
     
     public void City(){
+        System.out.println("Type: 3");
+        
         Stage stage = new Stage();
         Pane root = new Pane();
-        
+
         Label lab = new Label();
-        
+
         Image img = new Image("city.jpg");
-        
+
         ImageView img2 = new ImageView(img);
         img2.setLayoutX(30);
         img2.setFitHeight(488);
         img2.setFitWidth(671);
-        
-        
-        
+
+
+
         lab.setText("---You are standing by the entrance---");
         lab.setLayoutX(300);
         lab.setLayoutY(510);
-        
+
         Button leave = new Button("Leave");
         leave.setLayoutX(40);
         leave.setLayoutY(520);
         leave.setOnAction(e -> {
             stage.close();
         });
-        
-        
+
+
         Button enter = new Button("enter the city");
         enter.setLayoutX(350);
         enter.setLayoutY(530);
@@ -595,8 +760,8 @@ public class Text_Adventure extends Application {
             lab.setText("---You are now in the city---");
             enter.setDisable(true);
         });
-        
-        
+
+
         Scene scene = new Scene(root, 700, 700);
         root.getChildren().addAll(leave,lab,enter,img2);
         stage.setTitle("City");
@@ -605,8 +770,38 @@ public class Text_Adventure extends Application {
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
-        
+
         System.out.println("You have left the City.");
+        
+    }
+    
+    
+    public void GenerateAttack(int chance, int difficulty)  {
+        // the number is the paramater that the number out of 100 needs to meet
+        // e.g. chance = 2 means that the number needs to be 2 or lower (or 2% chance or getting attacked)
+        // in order for the attacksequence to run 
+        
+        
+        Random rand = new Random();
+        int isAttack = rand.nextInt(100);
+        isAttack++;
+        if(isAttack <= chance){
+            AttackSequence(difficulty);
+        }
+    }
+    
+    public void AttackSequence(int difficulty){
+       // 0 = type 1 wilderness
+       // 1 = type 1 cave or house  
+       // 2 = type 2 cave or house 
+       // 3 = type 2 wilderness
+       // 4 = type 3 cave or house
+       // 5 = type 3 wilderness
+       // 6 = City 
+       
+       
+        System.out.println("You've been attacked and you won by default because i havent finished this yet");
+  
     }
     
 }
