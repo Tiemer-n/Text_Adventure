@@ -39,10 +39,10 @@ public class Menu extends javax.swing.JFrame {
         setBounds(new java.awt.Rectangle(0, 0, 0, 0));
         getContentPane().setLayout(null);
 
-        jLabel1.setFont(new java.awt.Font("Yu Gothic Light", 2, 50)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Yu Gothic Medium", 2, 50)); // NOI18N
         jLabel1.setText("Text_Adventure");
         getContentPane().add(jLabel1);
-        jLabel1.setBounds(110, 40, 340, 130);
+        jLabel1.setBounds(110, 40, 410, 130);
 
         jButton1.setText("How to play");
         jButton1.addActionListener(new java.awt.event.ActionListener() {

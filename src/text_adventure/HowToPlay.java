@@ -102,13 +102,14 @@ public class HowToPlay extends javax.swing.JFrame {
         getContentPane().add(jLabel15);
         jLabel15.setBounds(350, 130, 260, 30);
 
+        jLabel3.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel3.setText("Each one you will have to fight somthing or someone  in order to proceed");
         getContentPane().add(jLabel3);
         jLabel3.setBounds(350, 160, 440, 20);
 
         jLabel14.setText("The materials you get can be useed to make bad to hold more water or armour to increase health");
         getContentPane().add(jLabel14);
-        jLabel14.setBounds(140, 270, 570, 16);
+        jLabel14.setBounds(140, 260, 570, 16);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

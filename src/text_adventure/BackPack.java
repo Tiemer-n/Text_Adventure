@@ -105,15 +105,6 @@ public class BackPack {
 
     public void setKnife(int knife) {
         this.knife = knife;
-    }
-
-    
-    
-   
-    
-    
-    
-    
-    
+    } 
     
 }

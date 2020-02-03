@@ -2,17 +2,24 @@
 package text_adventure;
 
 
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.Duration;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -33,7 +40,7 @@ public class Text_Adventure extends Application {
     public static int x = 15;
     public static int y = 15;
     public int on = 1;
-    public static int MaxWater = 1000;
+    public static int MaxWater = 10;
     public static int MaxFood = 10;
     public static BackPack pack = new BackPack(MaxFood,MaxWater,0,0,0,0,0,0,0,0);
     
@@ -61,14 +68,17 @@ public class Text_Adventure extends Application {
             if (Check(-1, 0) == 1) {
                 MovePlayer(-1, 0);
                 pack.setWater(pack.getWater()-1);
+                CheckFood();
                 CreateMap();
                 CheckHealth();
+                WildernessAttack();
             }
             else if (Check(-1,0) == 2){
                 MovePlayer(-1, 0);   
                 CreateMap(); 
                 CheckHealth();
                 pack.setWater(pack.getWater()-1);
+                CheckFood();
                 runLandmark(LandMarkMap[x][y]);
             }
 
@@ -82,12 +92,15 @@ public class Text_Adventure extends Application {
             if( Check(1,0) == 1 ){
                 MovePlayer(1, 0);
                 pack.setWater(pack.getWater()-1);
+                CheckFood();
                 CreateMap();  
                 CheckHealth();
+                WildernessAttack();
             }
             else if ( Check(1,0) == 2){
                 MovePlayer(1, 0);
                 pack.setWater(pack.getWater()-1);
+                CheckFood();
                 CreateMap();
                 CheckHealth();
                 runLandmark(LandMarkMap[x][y]);
@@ -102,14 +115,17 @@ public class Text_Adventure extends Application {
             if( Check(0,-1) == 1 ){
                 MovePlayer(0, -1);
                 pack.setWater(pack.getWater()-1);
+                CheckFood();
                 CreateMap();
                 CheckHealth();
+                WildernessAttack();
             }
             else if ( Check(0,-1) == 2){
                 MovePlayer(0, -1); 
                 CreateMap(); 
                 CheckHealth();
                 pack.setWater(pack.getWater()-1);
+                CheckFood();
                 runLandmark(LandMarkMap[x][y]);
             }
             
@@ -122,12 +138,15 @@ public class Text_Adventure extends Application {
             if( Check(0,1) == 1 ){
                 MovePlayer(0, 1);
                 pack.setWater(pack.getWater()-1);
+                CheckFood();
                 CreateMap();
                 CheckHealth();
+                WildernessAttack();
             }
             else if ( Check(0,1) == 2){
                 MovePlayer(0, 1);
                 pack.setWater(pack.getWater()-1);
+                CheckFood();
                 CreateMap();
                 CheckHealth();
                 runLandmark(LandMarkMap[x][y]);
@@ -168,31 +187,32 @@ public class Text_Adventure extends Application {
             System.out.println("You've ran out of water");
             System.out.println("It becomes impossible to go on");
         }else if (pack.water <= -1){
+            map[x][y] =" " + "\u2620" + " ";
+            CreateMap();
             System.out.println("");
             System.out.println("You ran out of water and have died of thirst");
             System.out.println("");
             System.out.println("GAME OVER");
+           
             System.exit(0);
-        }   
+        }else if (pack.food == 0 ){
+            System.out.println("Youve ran out of food ");
+            System.out.println("it will only take days to starve");
+        }else if (pack.food < -2){
+            map[x][y] =" " + "\u2620" + " ";
+            CreateMap();
+            System.out.println("");
+            System.out.println("You ran out of food and have starved to death");
+            System.out.println("");
+            System.out.println("GAME OVER");
+            System.exit(0);
+        }
     }
 
     public void CreateLandmarks() throws FileNotFoundException{
         Random rand = new Random();
-        String Pick= " ";
-        int picktemp = rand.nextInt(3);
-        switch (picktemp) {
-            case 0:
-                Pick = "template1.txt";
-                break;
-            case 1:
-                Pick = "template2.txt";
-                break;
-            case 2:
-                Pick = "template3.txt";
-                break;
-            default:
-                break;
-        }
+        
+        
         try{
             File dirl = new File("res/template1.txt");
             Scanner read = new Scanner(dirl);
@@ -231,7 +251,16 @@ public class Text_Adventure extends Application {
         
     }
     
-    
+    public int check = 0;
+    public void CheckFood(){
+        
+        if(check == 2){
+            pack.food--;
+            check = 0;
+        }else{
+            check++;
+        }
+    }
     
     public int Check(int ex, int why) {
         if ((x + ex) < 0 || (x + ex) > 29 || (y + why) < 0 || (y + why) > 29) {
@@ -241,8 +270,6 @@ public class Text_Adventure extends Application {
         }else {
             return 1;
         }
-        
-        
     }
     
 
@@ -490,6 +517,14 @@ public class Text_Adventure extends Application {
     
     
     public void Cave(int type){
+        
+        int currentleather = pack.leather;
+        int currentwood = pack.wood;
+        int currentiron = pack.iron;
+        int currentsteel = pack.iron;
+        
+        
+        
         System.out.println("Type: " + type);
         Random rand = new Random();
         
@@ -523,6 +558,7 @@ public class Text_Adventure extends Application {
         enter.setLayoutY(520);
         //first layer --------------------------------------------------------------------------------------------------------
         enter.setOnAction(e -> {
+            
             final int Leather = rand.nextInt(3); 
             final int wood = rand.nextInt(3); 
             final int Iron = rand.nextInt(3);
@@ -558,6 +594,28 @@ public class Text_Adventure extends Application {
             }else{
                 lab2.setText("you couldnt find anything in the cave");
             }
+            Button abandon = new Button("abandon"); abandon.setLayoutY(550); abandon.setLayoutX(40);
+            root.getChildren().add(abandon);
+            abandon.setTooltip(new Tooltip("you will loose all materials you found!"));
+            abandon.setOnAction(a ->{
+                
+                if(currentleather < pack.leather){
+                    pack.leather -= Leather;
+                }
+                if(currentwood < pack.wood){
+                    pack.wood -= wood;
+                }
+                if(currentiron < pack.iron){
+                    pack.iron -= Iron;
+                }
+                
+                if (currentsteel < pack.steel){
+                    pack.steel -= Steel;
+                }
+                
+                stage.close();
+            });
+            
             Button enterFurther = new Button ("EnterFurther"); enterFurther.setLayoutX(300); enterFurther.setLayoutY(600);
             //second layer ---------------------------------------------------------------------------------------------------
             enterFurther.setOnAction(a -> {
@@ -567,7 +625,7 @@ public class Text_Adventure extends Application {
                 final int wood2 = rand.nextInt(4);
                 final int Iron2 = rand.nextInt(3);
                 final int Steel2 = rand.nextInt(3);
-                root.getChildren().removeAll(enterFurther,leave);
+                root.getChildren().removeAll(enterFurther,leave,abandon);
                 lab1.setText("You go even deeper into the cave");
                 GenerateAttack(101,type,"C");
                 
@@ -609,13 +667,35 @@ public class Text_Adventure extends Application {
                 }
                 lab3.setText("You search around for valued items");
                 
-                Button FinalVenture = new Button("Enter Deeper"); FinalVenture.setLayoutX(300); FinalVenture.setLayoutY(600);
                 
+                Button abandon2 = new Button("abandon"); abandon2.setLayoutY(550); abandon2.setLayoutX(40);
+                root.getChildren().add(abandon2);
+                abandon2.setTooltip(new Tooltip("you will loose all materials you found!"));
+                abandon2.setOnAction(i ->{
+
+                    if(currentleather < pack.leather){
+                        pack.leather -= (Leather + Leather2);
+                    }
+                    if(currentwood < pack.wood){
+                        pack.wood -= (wood + wood2);
+                    }
+                    if(currentiron < pack.iron){
+                        pack.iron -= (Iron + Iron2);
+                    }
+                    if (currentsteel < pack.steel){
+                        pack.steel -= (Steel + Steel2);
+                    }
+
+                    stage.close();
+                });
+                
+                Button FinalVenture = new Button("Enter Deeper"); FinalVenture.setLayoutX(300); FinalVenture.setLayoutY(600);
+
 
                 // final layer ----------------------------------------------------------------
                 FinalVenture.setOnAction(i -> {
                     
-                    root.getChildren().remove(FinalVenture);
+                    root.getChildren().removeAll(FinalVenture,abandon2);
                     GenerateAttack(101,type,"C");
                     
                     lab1.setText("Youve reached the end of the cave");
@@ -679,6 +759,12 @@ public class Text_Adventure extends Application {
     }
     
     public void House(int type){
+        
+        int currentleather = pack.leather;
+        int currentwood = pack.wood;
+        int currentiron = pack.iron;
+        int currentsteel = pack.iron;
+        
         System.out.println("Type: " + type);
         Random rand = new Random();
         
@@ -747,6 +833,29 @@ public class Text_Adventure extends Application {
             }else{
                 lab2.setText("you couldnt find anything in the In the room");
             }
+            
+            Button abandon = new Button("abandon"); abandon.setLayoutY(550); abandon.setLayoutX(40);
+            root.getChildren().add(abandon);
+            abandon.setTooltip(new Tooltip("you will loose all materials you found!"));
+            abandon.setOnAction(a ->{
+                
+                if(currentleather < pack.leather){
+                    pack.leather -= Leather;
+                }
+                if(currentwood < pack.wood){
+                    pack.wood -= wood;
+                }
+                if(currentiron < pack.iron){
+                    pack.iron -= Iron;
+                }
+                
+                if (currentsteel < pack.steel){
+                    pack.steel -= Steel;
+                }
+                
+                stage.close();
+            });
+            
             Button enterFurther = new Button ("Go Upstairs"); enterFurther.setLayoutX(300); enterFurther.setLayoutY(600);
             //second layer ---------------------------------------------------------------------------------------------------
             enterFurther.setOnAction(a -> {
@@ -756,7 +865,7 @@ public class Text_Adventure extends Application {
                 final int wood2 = rand.nextInt(2);
                 final int Iron2 = rand.nextInt(3);
                 final int Steel2 = rand.nextInt(3);
-                root.getChildren().removeAll(enterFurther,leave);
+                root.getChildren().removeAll(enterFurther,leave,abandon);
                 lab1.setText("You go upstairs to the second floor");
                 lab3.setText("");
                 GenerateAttack(101,type,"H");
@@ -798,13 +907,34 @@ public class Text_Adventure extends Application {
                         break;
                 }
                 
+                Button abandon2 = new Button("abandon"); abandon2.setLayoutY(550); abandon2.setLayoutX(40);
+                root.getChildren().add(abandon2);
+                abandon2.setTooltip(new Tooltip("you will loose all materials you found!"));
+                abandon2.setOnAction(i ->{
+
+                    if(currentleather < pack.leather){
+                        pack.leather -= (Leather + Leather2);
+                    }
+                    if(currentwood < pack.wood){
+                        pack.wood -= (wood + wood2);
+                    }
+                    if(currentiron < pack.iron){
+                        pack.iron -= (Iron + Iron2);
+                    }
+                    if (currentsteel < pack.steel){
+                        pack.steel -= (Steel + Steel2);
+                    }
+
+                    stage.close();
+                });
+                
                 Button FinalVenture = new Button("Go into the basement"); FinalVenture.setLayoutX(300); FinalVenture.setLayoutY(600);
                 
 
                 // final layer ----------------------------------------------------------------
                 FinalVenture.setOnAction(i -> {
                     
-                    root.getChildren().remove(FinalVenture);
+                    root.getChildren().removeAll(abandon2,FinalVenture);
                     GenerateAttack(101,type,"H");
                     
                     lab1.setText("Youve reached the last room of the house");
@@ -870,22 +1000,32 @@ public class Text_Adventure extends Application {
         
         Stage stage = new Stage();
         Pane root = new Pane();
-
-        Label lab = new Label();
-
+        Scene scene = new Scene(root, 700, 700);
+        
         Image img = new Image("city.jpg");
-
         ImageView img2 = new ImageView(img);
         img2.setLayoutX(30);
         img2.setFitHeight(488);
         img2.setFitWidth(671);
-
-
-
+        
+        
+        Label lab = new Label();
         lab.setText("---You are standing by the entrance---");
-        lab.setLayoutX(300);
+        lab.setLayoutX(200);
         lab.setLayoutY(510);
 
+        Label lab2 = new Label("");
+        lab2.setLayoutX(200);
+        lab2.setLayoutY(540);
+        
+        Label lab3 = new Label("");
+        lab3.setLayoutX(200);
+        lab3.setLayoutY(570);
+        
+        Label attention = new Label("");
+        attention.setLayoutX(270);
+        attention.setLayoutY(605);
+        
         Button leave = new Button("Leave");
         leave.setLayoutX(40);
         leave.setLayoutY(520);
@@ -897,14 +1037,95 @@ public class Text_Adventure extends Application {
         Button enter = new Button("enter the city");
         enter.setLayoutX(350);
         enter.setLayoutY(530);
+        
+        
+        
+        
         enter.setOnAction(e -> {
-            lab.setText("---You are now in the city---");
-            enter.setDisable(true);
+            
+            Pane toot = new Pane();
+            Scene isSure = new Scene(toot , 400, 150 );
+            
+            Label sure = new Label("Are you sure?");
+            sure.setStyle("-fx-font-size:38;" + " -fx-font-weight:bold;");
+            sure.setLayoutY(10); sure.setLayoutX(70);
+
+            Label sure2 = new Label("You need to be well prepared with plenty of health and attack");
+            sure2.setLayoutY(65); sure2.setLayoutX(40);
+            
+            
+            
+            Button yes = new Button ("Yes"); yes.setLayoutX(70); yes.setLayoutY(90);
+            
+            //first layer --------------------------------------------------------------------
+            yes.setOnAction(a ->{
+                Button proceed = new Button ("Proceed");
+                proceed.setLayoutX(200); proceed.setLayoutY(600);
+                root.getChildren().add(proceed);
+                
+                stage.setScene(scene);
+                root.getChildren().removeAll(leave,enter);
+                GenerateAttack(101,6,"O");                    
+                    
+                lab.setText("---You are now in the city---"); 
+                proceed.setOnAction (event -> {
+                    lab2.setText("You find a ruined market and inside you find some scraps of meat");
+                    proceed.setOnAction(event2 ->{
+                        lab3.setText("You threw the rotted ones away but you managed to snatch a few good ones");
+                        attention.setText("Picked up +5 food");
+                        pack.food += 5;
+                        proceed.setText("Fight");
+                        proceed.setOnAction(event3 ->{
+                            attention.setText("");
+                            GenerateAttack(101,6,"O");
+                            wait(1500);
+                            lab2.setText("");
+                            lab3.setText("");
+                            lab.setText("Walking, you are now exhausted but you did seem to find goods within the buildings");
+                            proceed.setText("Proceed");
+                            proceed.setOnAction(event4 ->{
+                                lab2.setText("seaching around within them you manage to find medicine capsules along with some food");
+                                proceed.setOnAction(event5 ->{
+                                    lab3.setText("But you hear people coming around so you make for a quick escape");
+                                    attention.setText("+1 medicine +2 food");
+                                    proceed.setText("Fight");
+                                    proceed.setOnAction(event6 ->{
+                                       AttackSequence(6,"O");
+                                       lab.setText("Well done you have completed the Game!");
+                                       lab2.setText("Thank you for playing ");
+                                       lab3.setText("And please give me an A*");
+                                       attention.setText("");
+                                       proceed.setText("Finish Game");
+                                       proceed.setOnAction(finalevent -> {
+                                           System.exit(0);
+                                       });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+                    
+                    
+                    
+                
+                
+            });
+            //first layer --------------------------------------------------------------------
+            
+            
+            Button no = new Button("no"); no.setLayoutX(300); no.setLayoutY(90);
+            no.setOnAction(a -> {
+               stage.setScene(scene);
+            });
+            
+            stage.setScene(isSure);
+            toot.getChildren().addAll(sure,yes,no,sure2);
         });
 
 
-        Scene scene = new Scene(root, 700, 700);
-        root.getChildren().addAll(leave,lab,enter,img2);
+        
+        root.getChildren().addAll(leave,lab,lab2,lab3,enter,img2,attention);
         stage.setTitle("City");
         stage.setScene(scene);
         stage.setResizable(false);
@@ -915,6 +1136,51 @@ public class Text_Adventure extends Application {
         System.out.println("You have left the City.");
         
     }
+    
+    
+    public void WildernessAttack(){
+        
+        //type 1
+        if(x >= 10 && x <= 20 && y >= 10 && y <= 20){
+            GenerateAttack(20,0,"W");
+        }
+        //type 2 
+        if ( (x > 5 && x < 10) && (y > 5  && y < 25) ){
+            GenerateAttack(20,3,"W");
+        }
+        if( x > 20 && x < 25 && (y > 5  && y < 25)){
+            GenerateAttack(20,3,"W");
+        }
+        if(y > 5 && y < 10 && (x > 5 && x < 25) ){
+            GenerateAttack(20,3,"W");
+        }
+        if(y > 20 && y < 25 && (x > 5 && x < 25) ){
+            GenerateAttack(20,3,"W");
+        }
+        //type 2 
+        
+        //type 3
+        if(x >= 0 && x <= 5 && y >= 0 && y < 30 ){
+            GenerateAttack(20,5,"W");
+        }        
+        if(x >= 25 && x < 30 && y >= 0 && y < 30){
+            GenerateAttack(20,5,"W");
+        }        
+        if (y >= 0 && y <= 5 && x >= 0 && x < 30 ){
+            GenerateAttack(20,5,"W");
+        }        
+        if(y >= 25 & y < 30 && x >= 0 && x < 30){
+            GenerateAttack(20,5,"W");
+        }
+        //type 3
+        
+        
+        
+        
+        
+        
+    }
+    
     
     
     public void GenerateAttack(int chance, int difficulty, String type)  {
@@ -939,12 +1205,17 @@ public class Text_Adventure extends Application {
        // 4 = type 3 cave or house
        // 5 = type 3 wilderness
        // 6 = City 
+
+        System.out.println("You've been attacked but you won by default because i havent finished this yet");
        
-       
-        System.out.println("You've been attacked and you won by default because i havent finished this yet");
-  
+    }
+    
+    public void wait(int wait){
+         try {
+            TimeUnit.MILLISECONDS.sleep(wait);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Text_Adventure.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 }
-
-
